@@ -684,7 +684,7 @@ public class PrecompiledComputeOps : ComputeOps, IModelCompiler
         if (K.kernelDepth != 1 || m_Compiled.kernel.shader == null)
             return base.DepthwiseConv2D(X, K, B, stride, pad, fusedActivation);
 
-        Assert.IsTrue(X.shape.IsNHWC());
+        //Assert.IsTrue(X.shape.IsNHWC());
         Assert.AreEqual(K.kernelDepth, 1);
         Assert.AreEqual(K.kernelCount, X.channels);
         Assert.AreEqual(K.kernelCount, B.flatWidth);

@@ -1540,8 +1540,9 @@ public class ComputeOps : ReferenceComputeOps
     protected override Tensor ApplyPadding(Tensor X, int[] pad, string kernelName, float constant = 0.0f)
     {
         Assert.IsTrue(X.shape.IsNHWC());
-        Assert.AreEqual(pad.Length, 4);
-
+        /*InternetSalmon Edit
+        //Assert.AreEqual(pad.Length, 4);
+        */
         var O = NewTensor(X.shape.ApplyBorder(pad));
         var fn = BestKernel(ComputeKernelLibrary.Padding(X.shape, O.shape, kernelName));
 
@@ -1553,11 +1554,13 @@ public class ComputeOps : ReferenceComputeOps
         if (kernelName == "Border2D")
         {
             // NOTE: negative "pad" variable will crop X tensor
+            int croppedChannel = X.channels - Math.Max(0, -pad[1]);
             int croppedWidth = X.width - Math.Max(0, -pad[2]);
             int croppedHeight = X.height - Math.Max(0, -pad[3]);
-            var croppedSize = new int[] { 0, 0 };
+            var croppedSize = new int[] { 0, 0, 0 };
             croppedSize[0] = croppedWidth;
             croppedSize[1] = croppedHeight;
+            croppedSize[2] = croppedChannel;
 
             fn.shader.SetInts("_Pool", croppedSize);
             fn.shader.SetFloat("_Beta", constant);

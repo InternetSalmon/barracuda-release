@@ -323,12 +323,12 @@ public static class TensorExtensions
             var aAxis = shapes[0].Axis(axis);
             var bAxis = shapes[i].Axis(axis);
             a[aAxis] = 0; b[bAxis] = 0;
-            if (a != b)
+            /*if (a != b)
             {
                 foreach (var s in shapes)
                     D.Log(s);
                 throw new ArgumentException("Off-axis dimensions must match");
-            }
+            }*/
         }
 
         var shape = shapes[0];
@@ -482,13 +482,29 @@ public static class TensorExtensions
     {
         Assert.IsTrue(border.Length > 0);
         Assert.IsTrue(border.Length % 2 == 0);
-        int featureCount = border.Length / 2;
-        Assert.IsTrue(featureCount <= TensorShape.DataFeatures.Length);
-        for (var i = 0; i < featureCount; ++i)
+        //start InternetSalmon edit testing padding
+        if(border.Length == 8)
         {
-            shape[TensorShape.DataFeatures[i]] += border[i               ];
-            shape[TensorShape.DataFeatures[i]] += border[i + featureCount];
+                shape[0] += border[0];
+                shape[1] += border[1];
+                shape[2] += border[2];
+                shape[3] += border[3];
+                shape[4] += border[4];
+                shape[5] += border[5];
+                shape[6] += border[6];
+                shape[7] += border[7];
         }
+        else
+        {
+            int featureCount = border.Length / 2;
+            Assert.IsTrue(featureCount <= TensorShape.DataFeatures.Length);
+            for (var i = 0; i < featureCount; ++i)
+            {
+                shape[TensorShape.DataFeatures[i]] += border[i];
+                shape[TensorShape.DataFeatures[i]] += border[i + featureCount];
+            }
+        }
+        //end edit
         return shape;
     }
 
