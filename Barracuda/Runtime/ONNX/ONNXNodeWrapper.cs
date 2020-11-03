@@ -364,8 +364,10 @@ namespace Unity.Barracuda.ONNX
                         " Non spatial padding (N and C) will be ignored and default to 0.");
 
                 // Skip non-spatial dimensions N, C (NCHW layout)
+                /*InternetSalmon commented for testing Pad support
                 starts = starts.Skip(2).ToArray();
                 ends = ends.Skip(2).ToArray();
+                */
             }
 
             // See: https://github.com/onnx/onnx/blob/master/docs/Operators.md#Pad
@@ -376,7 +378,6 @@ namespace Unity.Barracuda.ONNX
             // Convert ONNX pad layout of [z, y, x ..., z', y', x'] to Barracuda layout [x, y, z ..., x', y', z']
             // where x  is x1_begin, y is x2_begin ...
             //       x' is x1_end, y' is x2_end ...
-
             Assert.IsTrue(starts.Length == ends.Length);
             switch (starts.Length)
             {
@@ -388,6 +389,13 @@ namespace Unity.Barracuda.ONNX
                 case 3: Warn("3D pads are not supported yet!");
                     return new [] { starts[2], starts[1], starts[0],
                                       ends[2],   ends[1],   ends[0] };  // 3D DHW => WHD
+                //InternetSalmon edit start
+                //ONNX => NCHW... Barracuda => NHWC
+                case 4:
+                    Warn("4D pads are not supported yet!");
+                    return new[] { starts[0], starts[2], starts[3], starts[1], // 4D NCHW => NHWC
+                                      ends[0], ends[2],   ends[3],   ends[1] };
+                //InternetSalmon edit end
                 default:
                     throw new OnnxLayerImportException(
                         $"Attribute pads of unsupported length {pads.Length} in {Name} ot type {OperatorType}.");
